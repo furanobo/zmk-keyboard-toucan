@@ -108,11 +108,40 @@
         status = "disabled";
         device = <&glidepoint_split>;
         input-processors = <&zip_xy_scaler 250 100>;
+
         scroller {
             layers = <1 2>;
             input-processors = <
                 &zip_xy_to_scroll_mapper
                 &zip_scroll_scaler 1 5
+                &zip_scroll_transform INPUT_TRANSFORM_X_INVERT
+            >;
+        };
+
+        slow_mode {
+            layers = <7>;
+            input-processors = <&zip_xy_scaler 125 100>;
+        };
+
+        slow_scroller {
+            layers = <8>;
+            input-processors = <
+                &zip_xy_to_scroll_mapper
+                &zip_scroll_scaler 1 10
+                &zip_scroll_transform INPUT_TRANSFORM_X_INVERT
+            >;
+        };
+
+        fast_mode {
+            layers = <9>;
+            input-processors = <&zip_xy_scaler 500 100>;
+        };
+
+        fast_scroller {
+            layers = <10>;
+            input-processors = <
+                &zip_xy_to_scroll_mapper
+                &zip_scroll_scaler 1 2
                 &zip_scroll_transform INPUT_TRANSFORM_X_INVERT
             >;
         };

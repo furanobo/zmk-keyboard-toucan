@@ -3,10 +3,14 @@
 #include <dt-bindings/zmk/bt.h>
 #include <dt-bindings/zmk/outputs.h>
 
-#define BASE 0
-#define NAV  1
-#define SYM  2
-#define ADJ  3
+#define BASE     0
+#define NAV      1
+#define SYM      2
+#define ADJ      3
+#define SLOW     7
+#define SLOW_SCR 8
+#define FAST     9
+#define FAST_SCR 10
 
 / {
     conditional_layers {
@@ -14,6 +18,22 @@
         tri_layer {
             if-layers = <1 2>;
             then-layer = <3>;
+        };
+        slow_scroll_nav {
+            if-layers = <SLOW NAV>;
+            then-layer = <SLOW_SCR>;
+        };
+        slow_scroll_sym {
+            if-layers = <SLOW SYM>;
+            then-layer = <SLOW_SCR>;
+        };
+        fast_scroll_nav {
+            if-layers = <FAST NAV>;
+            then-layer = <FAST_SCR>;
+        };
+        fast_scroll_sym {
+            if-layers = <FAST SYM>;
+            then-layer = <FAST_SCR>;
         };
     };
 
@@ -53,9 +73,9 @@
         adj {
             display-name = "ADJ";
             bindings = <
-                &mo TAB   &trans &kp F7 &kp F8 &kp F9 &kp F12   &kp C_VOL_DN &kp C_MUTE  &kp C_VOL_UP &trans &trans &kp BSPC
-                &kp LCTRL &trans &kp F4 &kp F5 &kp F6 &kp F11   &trans       &trans      &trans       &trans &trans &trans
-                &bt LSHFT &trans &kp F1 &kp F2 &kp F3 &kp F10   &trans       &trans      &trans       &trans &trans &trans
+                &mo TAB   &trans &kp F7 &kp F8 &kp F9 &kp F12   &kp C_VOL_DN &kp C_MUTE  &kp C_VOL_UP &trans     &trans     &kp BSPC
+                &kp LCTRL &trans &kp F4 &kp F5 &kp F6 &kp F11   &kp LANG2    &kp LANG1   &trans       &trans     &trans     &trans
+                &bt LSHFT &trans &kp F1 &kp F2 &kp F3 &kp F10   &tog SLOW    &tog FAST   &trans       &trans     &trans     &trans
                                    &kp LGUI &mo NAV &kp SPACE   &kp RET &mo 2 &kp RALT
             >;
         };
@@ -69,6 +89,46 @@
 
         extra_3 {
                 status = "reserved";
+        };
+
+        slow {
+            display-name = "SLOW";
+            bindings = <
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans   &trans &trans &trans
+            >;
+        };
+
+        slow_scr {
+            display-name = "SLOW_SCR";
+            bindings = <
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans   &trans &trans &trans
+            >;
+        };
+
+        fast {
+            display-name = "FAST";
+            bindings = <
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans   &trans &trans &trans
+            >;
+        };
+
+        fast_scr {
+            display-name = "FAST_SCR";
+            bindings = <
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans   &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans   &trans &trans &trans
+            >;
         };
     };
 };
