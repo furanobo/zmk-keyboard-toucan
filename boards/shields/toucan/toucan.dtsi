@@ -107,7 +107,8 @@
         compatible = "zmk,input-listener";
         status = "disabled";
         device = <&glidepoint_split>;
-        input-processors = <&zip_xy_scaler 250 100>;
+        // zip_temp_layer: activate MOUSE layer (4) on trackpad touch, 2s timeout
+        input-processors = <&zip_temp_layer 4 2000 &zip_xy_scaler 250 100>;
 
         scroller {
             layers = <1 2>;
@@ -146,4 +147,9 @@
             >;
         };
     };
+};
+
+&zip_temp_layer {
+    // Don't deactivate MOUSE layer when pressing mouse button keys (left home row + thumb)
+    excluded-positions = <14 15 16 36 37>;
 };
