@@ -18,8 +18,8 @@
         compatible = "zmk,conditional-layers";
 
         tri_layer {
-            if-layers = <1 2>;
-            then-layer = <3>;
+            if-layers = <NAV SYM>;
+            then-layer = <ADJ>;
         };
 
         slow_scroll_nav {
@@ -46,38 +46,89 @@
     keymap {
         compatible = "zmk,keymap";
 
+        // ┌───────┬─────┬─────┬─────┬─────┬─────┐   ┌─────┬─────┬─────┬─────┬─────┬──────┐
+        // │  TAB  │  Q  │  W  │  E  │  R  │  T  │   │  Y  │  U  │  I  │  O  │  P  │ BSPC │
+        // │ GRAVE │  A  │  S  │  D  │  F  │  G  │   │  H  │  J  │  K  │  L  │  ;  │  '   │
+        // │ LSHFT │  Z  │  X  │  C  │  V  │  B  │   │  N  │  M  │  ,  │  .  │  /  │ ESC  │
+        // └───────┴─────┴──┬──┴──┬──┴──┬──┴─────┘   └─────┴──┬──┴──┬──┴──┬──┴─────┴──────┘
+        //                  │LCTRL│ NAV │SPACE│           │ RET │ SYM │RALT │
+        //                  └─────┴─────┴─────┘           └─────┴─────┴─────┘
         base {
             display-name = "BASE";
             bindings = <
-&kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC  &kp GRAVE  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SEMI  &kp SQT  &kp LSHFT  &kp Z  &mt LEFT_GUI X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC  &kp SPACE  &mo 2  &kp SPACE  &kp COLON  &kp SEMICOLON  &kp RALT
+                &kp TAB    &kp Q  &kp W       &kp E  &kp R  &kp T       &kp Y    &kp U  &kp I      &kp O    &kp P     &kp BSPC
+                &kp GRAVE  &kp A  &kp S       &kp D  &kp F  &kp G       &kp H    &kp J  &kp K      &kp L    &kp SEMI  &kp SQT
+                &kp LSHFT  &kp Z  &mt LGUI X  &kp C  &kp V  &kp B       &kp N    &kp M  &kp COMMA  &kp DOT  &kp FSLH  &kp ESC
+                                       &kp LCTRL  &mo NAV  &kp SPACE    &kp RET  &mo SYM  &kp RALT
             >;
         };
 
+        // ┌───────┬──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬───────┬──────┬──────┐
+        // │  TAB  │  1   │  2   │  3   │  4   │  5   │   │  6   │  7   │  8   │   9   │  0   │ BSPC │
+        // │BT CLR │ BT 0 │ BT 1 │ BT 2 │ BT 3 │ BT 4 │   │  ←   │  ↓   │  ↑   │   →   │ HOME │ END  │
+        // │ LSHFT │UNLOCK│      │      │      │      │   │PG DN │PG UP │      │       │ INS  │      │
+        // └───────┴──────┴──┬───┴──┬───┴──┬───┴──────┘   └──────┴──┬───┴──┬───┴──┬────┴──────┴──────┘
+        //                   │      │ held │SPACE │           │ RET  │      │ RALT │
+        //                   └──────┴──────┴──────┘           └──────┴──────┴──────┘
         nav {
             display-name = "NAV";
             bindings = <
-&kp TAB  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &kp BSPC  &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &kp LEFT  &kp DOWN  &kp UP  &kp RIGHT  &trans  &trans  &kp LSHFT  &studio_unlock  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp LGUI  &trans  &kp SPACE  &kp RET  &trans  &kp RALT
+                &kp TAB     &kp N1        &kp N2        &kp N3        &kp N4        &kp N5            &kp N6     &kp N7     &kp N8  &kp N9     &kp N0    &kp BSPC
+                &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4      &kp LEFT   &kp DOWN   &kp UP  &kp RIGHT  &kp HOME  &kp END
+                &kp LSHFT   &studio_unlock  &trans       &trans        &trans        &trans            &kp PG_DN  &kp PG_UP  &trans  &trans     &kp INS   &trans
+                                                          &trans        &trans        &kp SPACE         &kp RET    &trans     &kp RALT
             >;
         };
 
+        // ┌───────┬──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┐
+        // │  ESC  │  !   │  @   │  #   │  $   │  %   │   │  7   │  8   │  9   │  -   │  =   │ DEL  │
+        // │ LCTRL │  [   │  ]   │  (   │  )   │  ^   │   │  4   │  5   │  6   │  +   │  *   │  |   │
+        // │ LSHFT │  \   │  _   │  {   │  }   │  &   │   │  1   │  2   │  3   │  0   │  .   │  ~   │
+        // └───────┴──────┴──┬───┴──┬───┴──┬───┴──────┘   └──────┴──┬───┴──┬───┴──┬───┴──────┴──────┘
+        //                   │      │      │SPACE │           │ RET  │ held │      │
+        //                   └──────┴──────┴──────┘           └──────┴──────┴──────┘
         sym {
             display-name = "SYM";
             bindings = <
-&kp ESCAPE  &trans  &trans  &kp UP_ARROW  &trans  &trans  &kp NUMBER_7  &kp NUMBER_8  &kp NUMBER_9  &kp MINUS  &kp EQUAL  &kp DELETE  &kp LCTRL  &trans  &kp LEFT  &kp DOWN_ARROW  &kp RIGHT  &trans  &kp NUMBER_4  &kp NUMBER_5  &kp NUMBER_6  &trans  &trans  &trans  &kp LSHFT  &to 1  &trans  &trans  &trans  &trans  &kp NUMBER_1  &kp NUMBER_2  &kp NUMBER_3  &kp NUMBER_0  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &kp ESC    &kp EXCL  &kp AT     &kp HASH  &kp DLLR  &kp PRCNT     &kp N7   &kp N8  &kp N9  &kp MINUS  &kp EQUAL  &kp DEL
+                &kp LCTRL  &kp LBKT  &kp RBKT   &kp LPAR  &kp RPAR  &kp CARET     &kp N4   &kp N5  &kp N6  &kp PLUS   &kp ASTRK  &kp PIPE
+                &kp LSHFT  &kp BSLH  &kp UNDER  &kp LBRC  &kp RBRC  &kp AMPS      &kp N1   &kp N2  &kp N3  &kp N0     &kp DOT    &kp TILDE
+                                                  &trans    &trans    &kp SPACE     &kp RET  &trans   &trans
             >;
         };
 
+        // ┌───────┬──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┐
+        // │  F1   │  F2  │  F3  │  F4  │  F5  │  F6  │   │  F7  │  F8  │  F9  │ F10  │ F11  │ F12  │
+        // │       │      │      │      │      │      │   │  ⏮  │  🔉  │  🔊  │  ⏭  │      │      │
+        // │       │      │      │      │      │      │   │T SLOW│T FAST│  🔇  │      │      │      │
+        // └───────┴──────┴──┬───┴──┬───┴──┬───┴──────┘   └──────┴──┬───┴──┬───┴──┬───┴──────┴──────┘
+        //                   │      │      │      │           │      │      │      │
+        //                   └──────┴──────┴──────┘           └──────┴──────┴──────┘
         adj {
             display-name = "ADJ";
             bindings = <
-&kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6  &kp F7  &kp F8  &kp F9  &kp F10  &kp F11  &kp F12  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &tog SLOW  &tog FAST  &trans  &trans  &trans  &trans  &kp LGUI  &mo NAV  &kp SPACE  &kp RET  &mo 2  &kp RALT
+                &kp F1  &kp F2  &kp F3  &kp F4  &kp F5  &kp F6      &kp F7     &kp F8        &kp F9        &kp F10     &kp F11  &kp F12
+                &trans  &trans  &trans  &trans  &trans  &trans      &kp C_PREV &kp C_VOL_DN  &kp C_VOL_UP  &kp C_NEXT  &trans   &trans
+                &trans  &trans  &trans  &trans  &trans  &trans      &tog SLOW  &tog FAST     &kp C_MUTE    &trans      &trans   &trans
+                                         &trans  &trans  &trans      &trans     &trans        &trans
             >;
         };
 
+        // ┌───────┬──────┬──────┬──────┬──────┬──────┐   ┌──────┬──────┬──────┬──────┬──────┬──────┐
+        // │       │      │      │      │      │      │   │      │      │      │      │      │      │
+        // │       │      │ RCLK │ MCLK │ LCLK │      │   │      │      │      │      │      │      │
+        // │       │      │      │      │      │      │   │      │      │      │      │      │      │
+        // └───────┴──────┴──┬───┴──┬───┴──┬───┴──────┘   └──────┴──┬───┴──┬───┴──┬───┴──────┴──────┘
+        //                   │      │ LCLK │      │           │      │      │      │
+        //                   └──────┴──────┴──────┘           └──────┴──────┴──────┘
+        // Activated automatically by zip_temp_layer when trackpad is touched
         mouse {
             display-name = "MOUSE";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mkp RCLK  &mkp MCLK  &mkp LCLK  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mkp LCLK  &trans  &trans  &trans  &trans
+                &trans  &trans  &trans     &trans     &trans     &trans      &trans  &trans  &trans  &trans  &trans  &trans
+                &trans  &trans  &mkp RCLK  &mkp MCLK  &mkp LCLK  &trans      &trans  &trans  &trans  &trans  &trans  &trans
+                &trans  &trans  &trans     &trans     &trans     &trans      &trans  &trans  &trans  &trans  &trans  &trans
+                                            &trans     &mkp LCLK  &trans      &trans  &trans  &trans
             >;
         };
 
@@ -88,28 +139,40 @@
         slow {
             display-name = "SLOW";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans    &trans &trans &trans
             >;
         };
 
         slow_scr {
             display-name = "SLOW_SCR";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans    &trans &trans &trans
             >;
         };
 
         fast {
             display-name = "FAST";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans    &trans &trans &trans
             >;
         };
 
         fast_scr {
             display-name = "FAST_SCR";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                &trans &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans &trans
+                                     &trans &trans &trans    &trans &trans &trans
             >;
         };
     };

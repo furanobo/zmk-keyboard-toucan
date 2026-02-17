@@ -151,5 +151,5 @@
 
 &zip_temp_layer {
     // Don't deactivate MOUSE layer when pressing mouse button keys (left home row + thumb)
-    excluded-positions = <14 15 16 36 37>;
+    excluded-positions = <14 15 16 37>;
 };
