@@ -1,0 +1,11 @@
+config ZMK_INPUT_PROCESSOR_SPEED_STEP
+    bool "Adjustable speed step input processor"
+    default y
+    depends on ZMK_POINTING
+    depends on DT_HAS_ZMK_INPUT_PROCESSOR_SPEED_STEP_ENABLED
+
+config ZMK_BEHAVIOR_SPEED_STEP
+    bool "Speed step adjustment behavior"
+    default y
+    depends on ZMK_INPUT_PROCESSOR_SPEED_STEP
+    depends on DT_HAS_ZMK_BEHAVIOR_SPEED_STEP_ENABLED

@@ -1,0 +1,54 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Adjustable speed step input processor.
+  Scales input event values by a runtime-selectable multiplier from a
+  configurable list of speed levels. The current level persists across
+  power cycles via Zephyr settings subsystem.
+
+compatible: "zmk,input-processor-speed-step"
+
+properties:
+  "#input-processor-cells":
+    type: int
+    required: true
+    const: 0
+
+  type:
+    type: int
+    required: true
+    description: Input event type to process (e.g. INPUT_EV_REL)
+
+  codes:
+    type: array
+    required: true
+    description: Input event codes to process (e.g. INPUT_REL_X, INPUT_REL_Y)
+
+  speed-multipliers:
+    type: array
+    required: true
+    description: |
+      Array of speed multipliers. Each value is divided by speed-divisor
+      to get the actual scaling factor.
+
+  speed-divisor:
+    type: int
+    default: 100
+    description: Common divisor for all speed multipliers (default 100)
+
+  default-level:
+    type: int
+    required: true
+    description: Default speed level index (0-based)
+
+  settings-name:
+    type: string
+    required: true
+    description: |
+      Unique short name for persistent settings key (e.g. "ms" for mouse speed).
+      Settings are stored under "spd/<settings-name>".
+
+  track-remainders:
+    type: boolean
+    description: Track fractional remainders across events for sub-pixel accuracy
