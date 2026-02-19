@@ -20,9 +20,9 @@
 ---
 include:
   - board: seeeduino_xiao_ble
-    shield: toucan_left rgbled_adapter nice_view_gem
+    shield: toucan_left rgbled_adapter nice_view_adapter nice_epaper
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DEXTRA_DTC_OVERLAY_FILE="../../config/nice_view_144x168.overlay"
   - board: seeeduino_xiao_ble
     shield: toucan_right rgbled_adapter
   - board: seeeduino_xiao_ble

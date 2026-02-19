@@ -10,6 +10,8 @@ manifest:
       url-base: https://github.com/caksoylar
     - name: geeksville
       url-base: https://github.com/geeksville
+    - name: mctechnology17
+      url-base: https://github.com/mctechnology17
   projects:
     - name: zmk
       remote: zmkfirmware
@@ -19,6 +21,9 @@ manifest:
       revision: toucan
     - name: zmk-rgbled-widget
       remote: caksoylar
+      revision: main
+    - name: zmk-nice-oled
+      remote: mctechnology17
       revision: main
   self:
     path: config

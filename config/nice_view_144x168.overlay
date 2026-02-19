@@ -1,0 +1,10 @@
+/*
+ * Override display resolution for nice!view GEM (144x168 Sharp Memory LCD)
+ * The zmk-nice-oled nice_epaper shield defaults to 160x68 (standard nice!view).
+ * The Toucan keyboard uses a 144x168 Sharp LS013B7DH06 display.
+ */
+
+&nice_view {
+    width = <144>;
+    height = <168>;
+};
