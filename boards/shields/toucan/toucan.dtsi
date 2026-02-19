@@ -6,6 +6,16 @@
 
 
 / {
+    aliases {
+        led-red = &led0;
+        led-green = &led1;
+        led-blue = &led2;
+    };
+
+    leds {
+        status = "okay";
+    };
+
     chosen {
         zmk,kscan = &kscan0;
         zmk,physical-layout = &default_layout;
