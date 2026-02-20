@@ -1,4 +1,4 @@
-zephyr_include_directories(include)
+zephyr_include_directories(include ${APPLICATION_SOURCE_DIR}/include)
 
 if(CONFIG_ZMK_INPUT_PROCESSOR_SPEED_STEP)
   zephyr_library_named(zmk_speed_step)
