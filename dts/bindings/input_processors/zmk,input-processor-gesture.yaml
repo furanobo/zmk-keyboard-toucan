@@ -52,3 +52,10 @@ properties:
       Time without input events (ms) before a touch is considered ended.
       Lower values make tap detection faster but may cause false
       touch-end detection on slow movements.
+
+  track-remainders:
+    type: boolean
+    description: |
+      Required by ZMK input listener framework. Not used by the gesture
+      processor (no scaling is performed). Must be present for
+      compatibility with the input processor chain.
