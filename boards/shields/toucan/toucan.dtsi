@@ -121,6 +121,17 @@
         track-remainders;
     };
 
+    /* Multitouch gesture processor: tap-to-click, multi-tap, swipe detection */
+    gesture_processor: gesture_processor {
+        compatible = "zmk,input-processor-gesture";
+        #input-processor-cells = <0>;
+        tap-timeout-ms = <200>;      /* Max touch duration for tap */
+        tap-threshold = <50>;        /* Max movement for tap */
+        double-tap-window-ms = <250>;/* Multi-tap timing window */
+        swipe-threshold = <300>;     /* Min movement for swipe */
+        touch-idle-timeout-ms = <80>;/* Finger-lift detection */
+    };
+
     split_inputs {
         #address-cells = <1>;
         #size-cells = <0>;
@@ -135,9 +146,8 @@
         compatible = "zmk,input-listener";
         status = "disabled";
         device = <&glidepoint_split>;
-        // zip_temp_layer: activate MOUSE layer (4) on trackpad touch, 2s timeout
-        // zip_temp_layer: activate MOUSE layer (4) on trackpad touch, 2s timeout
-        input-processors = <&zip_temp_layer 4 2000 &mouse_speed>;
+        // Gesture processor detects taps/swipes, then zip_temp_layer activates MOUSE layer
+        input-processors = <&gesture_processor &zip_temp_layer 4 2000 &mouse_speed>;
 
         scroller {
             layers = <1 2>;

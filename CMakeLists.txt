@@ -13,3 +13,11 @@ if(CONFIG_ZMK_INPUT_PROCESSOR_SPEED_STEP)
     )
   endif()
 endif()
+
+if(CONFIG_ZMK_INPUT_PROCESSOR_GESTURE)
+  zephyr_library_named(zmk_gesture)
+  zephyr_library_sources(
+    src/input_processor_gesture.c
+  )
+  zephyr_library_include_directories(include)
+endif()
