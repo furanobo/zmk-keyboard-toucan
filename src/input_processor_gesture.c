@@ -13,9 +13,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 
-#include <zmk/hid.h>
-#include <zmk/endpoints.h>
-
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 /* Gesture detection states */
@@ -47,16 +44,15 @@ struct gesture_data {
     struct k_work_delayable tap_decision_work;
 };
 
-/* --- Mouse button emission via ZMK HID --- */
+/* --- Mouse button emission via Zephyr input API --- */
+/* Same approach as zmk,behavior-mouse-key-press: use input_report_key() */
 
-static void emit_mouse_click(uint8_t button_bit) {
-    zmk_hid_mouse_button_press(BIT(button_bit));
-    zmk_endpoints_send_mouse_report();
+static void emit_mouse_press(const struct device *dev, uint16_t button_code) {
+    input_report_key(dev, button_code, 1, true, K_FOREVER);
 }
 
-static void emit_mouse_release(uint8_t button_bit) {
-    zmk_hid_mouse_button_release(BIT(button_bit));
-    zmk_endpoints_send_mouse_report();
+static void emit_mouse_release(const struct device *dev, uint16_t button_code) {
+    input_report_key(dev, button_code, 0, true, K_FOREVER);
 }
 
 /* --- Delayed work handlers (run in system workqueue) --- */
@@ -70,11 +66,15 @@ static void touch_timeout_handler(struct k_work *work) {
         return;
     }
 
-    /* No events received for touch_idle_timeout_ms → finger lifted */
-    int32_t total_movement = abs(data->accum_x) + abs(data->accum_y);
-    int64_t touch_duration = k_uptime_get() - data->touch_start_ms;
+    /* No events received for touch_idle_timeout_ms - finger lifted */
+    int32_t total_movement;
+    int32_t ax = data->accum_x < 0 ? -data->accum_x : data->accum_x;
+    int32_t ay = data->accum_y < 0 ? -data->accum_y : data->accum_y;
+    total_movement = ax + ay;
 
-    LOG_DBG("Gesture: touch ended, duration=%lld ms, movement=%d",
+    int32_t touch_duration = (int32_t)(k_uptime_get() - data->touch_start_ms);
+
+    LOG_DBG("Gesture: touch ended, duration=%d ms, movement=%d",
             touch_duration, total_movement);
 
     if (total_movement < config->tap_threshold &&
@@ -90,10 +90,7 @@ static void touch_timeout_handler(struct k_work *work) {
         LOG_DBG("Gesture: tap #%d detected, waiting for multi-tap", data->tap_count);
     } else if (total_movement >= config->swipe_threshold) {
         /* Qualifies as a swipe */
-        int32_t abs_x = abs(data->accum_x);
-        int32_t abs_y = abs(data->accum_y);
-
-        if (abs_x > abs_y) {
+        if (ax > ay) {
             LOG_INF("Gesture: swipe %s (dx=%d)",
                     data->accum_x > 0 ? "RIGHT" : "LEFT", data->accum_x);
         } else {
@@ -118,27 +115,27 @@ static void tap_decision_handler(struct k_work *work) {
         return;
     }
 
-    LOG_INF("Gesture: %d-tap → %s click",
+    uint16_t button_code;
+    switch (data->tap_count) {
+    case 1:
+        button_code = INPUT_BTN_0; /* Left click */
+        break;
+    case 2:
+        button_code = INPUT_BTN_1; /* Right click */
+        break;
+    default:
+        button_code = INPUT_BTN_2; /* Middle click */
+        break;
+    }
+
+    LOG_INF("Gesture: %d-tap -> %s click",
             data->tap_count,
             data->tap_count == 1 ? "left" :
             data->tap_count == 2 ? "right" : "middle");
 
-    uint8_t button;
-    switch (data->tap_count) {
-    case 1:
-        button = 0; /* Left click */
-        break;
-    case 2:
-        button = 1; /* Right click */
-        break;
-    default:
-        button = 2; /* Middle click */
-        break;
-    }
-
-    emit_mouse_click(button);
+    emit_mouse_press(data->dev, button_code);
     k_msleep(30);
-    emit_mouse_release(button);
+    emit_mouse_release(data->dev, button_code);
 
     data->tap_count = 0;
     data->state = GESTURE_STATE_IDLE;
@@ -173,7 +170,7 @@ static int gesture_handle_event(const struct device *dev, struct input_event *ev
 
     switch (data->state) {
     case GESTURE_STATE_IDLE:
-        /* First event after idle → new touch */
+        /* First event after idle - new touch */
         data->state = GESTURE_STATE_TOUCHING;
         data->touch_start_ms = now;
         data->accum_x = data->pending_x;
@@ -181,13 +178,13 @@ static int gesture_handle_event(const struct device *dev, struct input_event *ev
         break;
 
     case GESTURE_STATE_TOUCHING:
-        /* Ongoing touch → accumulate movement */
+        /* Ongoing touch - accumulate movement */
         data->accum_x += data->pending_x;
         data->accum_y += data->pending_y;
         break;
 
     case GESTURE_STATE_TAP_WAIT:
-        /* New touch while waiting for multi-tap → could be another tap */
+        /* New touch while waiting for multi-tap */
         k_work_cancel_delayable(&data->tap_decision_work);
         data->state = GESTURE_STATE_TOUCHING;
         data->touch_start_ms = now;
