@@ -11,6 +11,7 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/events/layer_state_changed.h>
 #include <zmk/events/usb_conn_state_changed.h>
 #include <zmk/events/wpm_state_changed.h>
+#include <zmk/events/keycode_state_changed.h>
 #include <zmk/battery.h>
 #include <zmk/ble.h>
 #include <zmk/display.h>
@@ -19,12 +20,20 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include <zmk/keymap.h>
 #include <zmk/usb.h>
 #include <zmk/split/central.h>
+#include <zmk/wpm.h>
+
+/* HID keyboard usage page and modifier keycodes */
+#define HID_USAGE_PAGE_KEYBOARD 0x07
+#define HID_KC_LEFT_CONTROL  0xE0
+#define HID_KC_RIGHT_GUI     0xE7
 
 #include "battery.h"
 #include "battery_peripheral.h"
 #include "layer.h"
 #include "output.h"
 #include "profile.h"
+#include "wpm.h"
+#include "modifiers.h"
 #include "screen.h"
 
 struct connection_status_state {
@@ -32,6 +41,9 @@ struct connection_status_state {
 };
 
 static sys_slist_t widgets = SYS_SLIST_STATIC_INIT(&widgets);
+
+/* Modifier state tracked via keycode events */
+static uint8_t current_modifiers = 0;
 
 /**
  * Draw buffers
@@ -47,6 +59,9 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     draw_profile_status(canvas, state);
     draw_battery_status(canvas, state);
     draw_battery_peripheral_status(canvas, state);
+    draw_luna(canvas, state);
+    draw_wpm_status(canvas, state);
+    draw_modifier_status(canvas, current_modifiers);
 }
 
 /**
@@ -190,6 +205,82 @@ ZMK_SUBSCRIPTION(widget_output_status, zmk_ble_active_profile_changed);
 #endif
 
 /**
+ * WPM status
+ **/
+
+struct wpm_status_state {
+    uint8_t wpm;
+};
+
+static void set_wpm_status(struct zmk_widget_screen *widget, struct wpm_status_state state) {
+    widget->state.wpm = state.wpm;
+    draw_top(widget->obj, widget->cbuf, &widget->state);
+}
+
+static void wpm_status_update_cb(struct wpm_status_state state) {
+    struct zmk_widget_screen *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) { set_wpm_status(widget, state); }
+}
+
+static struct wpm_status_state wpm_status_get_state(const zmk_event_t *eh) {
+    return (struct wpm_status_state){.wpm = zmk_wpm_get_state()};
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_wpm_status, struct wpm_status_state, wpm_status_update_cb,
+                            wpm_status_get_state)
+
+ZMK_SUBSCRIPTION(widget_wpm_status, zmk_wpm_state_changed);
+
+/**
+ * Modifier status (tracked via keycode events)
+ **/
+
+struct modifier_status_state {
+    uint8_t modifiers;
+};
+
+static bool is_modifier_usage(uint32_t usage_page, uint32_t keycode) {
+    return usage_page == HID_USAGE_PAGE_KEYBOARD &&
+           keycode >= HID_KC_LEFT_CONTROL &&
+           keycode <= HID_KC_RIGHT_GUI;
+}
+
+static uint8_t modifier_bit_for_keycode(uint32_t keycode) {
+    return 1u << (keycode - HID_KC_LEFT_CONTROL);
+}
+
+static void set_modifier_status(struct zmk_widget_screen *widget,
+                                struct modifier_status_state state) {
+    current_modifiers = state.modifiers;
+    draw_top(widget->obj, widget->cbuf, &widget->state);
+}
+
+static void modifier_status_update_cb(struct modifier_status_state state) {
+    struct zmk_widget_screen *widget;
+    SYS_SLIST_FOR_EACH_CONTAINER(&widgets, widget, node) {
+        set_modifier_status(widget, state);
+    }
+}
+
+static struct modifier_status_state modifier_status_get_state(const zmk_event_t *eh) {
+    const struct zmk_keycode_state_changed *ev = as_zmk_keycode_state_changed(eh);
+    if (ev != NULL && is_modifier_usage(ev->usage_page, ev->keycode)) {
+        uint8_t bit = modifier_bit_for_keycode(ev->keycode);
+        if (ev->state) {
+            current_modifiers |= bit;
+        } else {
+            current_modifiers &= ~bit;
+        }
+    }
+    return (struct modifier_status_state){.modifiers = current_modifiers};
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_modifier_status, struct modifier_status_state,
+                            modifier_status_update_cb, modifier_status_get_state)
+
+ZMK_SUBSCRIPTION(widget_modifier_status, zmk_keycode_state_changed);
+
+/**
  * Initialization
  **/
 
@@ -206,6 +297,8 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
     widget_battery_peripheral_status_init();
     widget_layer_status_init();
     widget_output_status_init();
+    widget_wpm_status_init();
+    widget_modifier_status_init();
 
     return 0;
 }
