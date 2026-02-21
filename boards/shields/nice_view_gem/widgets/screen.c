@@ -59,7 +59,7 @@ static void draw_top(lv_obj_t *widget, lv_color_t cbuf[], const struct status_st
     draw_profile_status(canvas, state);
     draw_battery_status(canvas, state);
     draw_battery_peripheral_status(canvas, state);
-    draw_luna(canvas, state);
+    draw_bongocat(canvas, state);
     draw_wpm_status(canvas, state);
     draw_modifier_status(canvas, current_modifiers);
 }

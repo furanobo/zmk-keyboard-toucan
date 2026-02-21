@@ -3,147 +3,106 @@
 #include "wpm.h"
 #include "../assets/custom_fonts.h"
 
-/* Luna sprite data - 20 pixels wide, 16 rows tall.
- * Each uint32_t row: bit 19 = leftmost, bit 0 = rightmost (20-bit wide).
- * Drawn at 2x scale (40x32 on screen).
+/* Bongocat sprite data - 24 pixels wide, 14 rows tall.
+ * Each uint32_t row: bit 23 = leftmost, bit 0 = rightmost (24-bit wide).
+ * Drawn at 3x scale (72x42 on screen).
+ *
+ * Layout (top to bottom):
+ *   rows 0-1:  ears
+ *   rows 2-7:  head / face
+ *   row  8:    table edge
+ *   rows 9-12: paws
+ *   row  13:   empty
  */
 
-#define LUNA_W 20
-#define LUNA_H 16
-#define LUNA_SCALE 2
+#define BONGO_W 24
+#define BONGO_H 14
+#define BONGO_SCALE 3
 
-/* Sitting frame 1 */
-static const uint32_t luna_sit1[LUNA_H] = {
-    0x00000, /*                     */
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0x3FC00, /* ..XXXXXXXX.         */
-    0x1F800, /* ...XXXXXX..         */
-    0x19800, /* ...XX..XX..         */
-    0x19800, /* ...XX..XX..         */
+/* Idle frame 1 – both paws resting on the table */
+static const uint32_t bongo_idle1[BONGO_H] = {
+    0x0C0300, /* ....XX..........XX...... */
+    0x1E0780, /* ...XXXX.......XXXX...... */
+    0x1FFF80, /* ...XXXXXXXXXXXXXX....... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x330CC0, /* ..XX..XX....XX..XX...... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x1FDF80, /* ...XXXXXXX.XXXXXXX...... */
+    0x0FFF00, /* ....XXXXXXXXXXXX........ */
+    0xFFFFFF, /* XXXXXXXXXXXXXXXXXXXXXXXX */
+    0x3801C0, /* ..XXX..........XXX...... */
+    0x7C03E0, /* .XXXXX........XXXXX..... */
+    0x7C03E0, /* .XXXXX........XXXXX..... */
+    0x3801C0, /* ..XXX..........XXX...... */
+    0x000000, /*                         */
 };
 
-/* Sitting frame 2 (ears slightly different) */
-static const uint32_t luna_sit2[LUNA_H] = {
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0x3FC00, /* ..XXXXXXXX.         */
-    0x1F800, /* ...XXXXXX..         */
-    0x19800, /* ...XX..XX..         */
-    0x00000, /*                     */
+/* Idle frame 2 – ears slightly raised */
+static const uint32_t bongo_idle2[BONGO_H] = {
+    0x1C0700, /* ...XXX.........XXX...... */
+    0x1E0780, /* ...XXXX.......XXXX...... */
+    0x1FFF80, /* ...XXXXXXXXXXXXXX....... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x330CC0, /* ..XX..XX....XX..XX...... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x1FDF80, /* ...XXXXXXX.XXXXXXX...... */
+    0x0FFF00, /* ....XXXXXXXXXXXX........ */
+    0xFFFFFF, /* XXXXXXXXXXXXXXXXXXXXXXXX */
+    0x3801C0, /* ..XXX..........XXX...... */
+    0x7C03E0, /* .XXXXX........XXXXX..... */
+    0x7C03E0, /* .XXXXX........XXXXX..... */
+    0x3801C0, /* ..XXX..........XXX...... */
+    0x000000, /*                         */
 };
 
-/* Walking frame 1 */
-static const uint32_t luna_walk1[LUNA_H] = {
-    0x00000, /*                     */
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0x3FC00, /* ..XXXXXXXX.         */
-    0x33600, /* ..XX.XX.XX.         */
-    0x21200, /* ..X....X..X         */
-    0x00000, /*                     */
+/* Tap frame 1 – left paw hitting (left paw hidden, right paw on table) */
+static const uint32_t bongo_tap1[BONGO_H] = {
+    0x0C0300, /* ....XX..........XX...... */
+    0x1E0780, /* ...XXXX.......XXXX...... */
+    0x1FFF80, /* ...XXXXXXXXXXXXXX....... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x330CC0, /* ..XX..XX....XX..XX...... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x1FDF80, /* ...XXXXXXX.XXXXXXX...... */
+    0x0FFF00, /* ....XXXXXXXXXXXX........ */
+    0xFFFFFF, /* XXXXXXXXXXXXXXXXXXXXXXXX */
+    0x0001C0, /* ...............XXX...... */
+    0x0003E0, /* ..............XXXXX..... */
+    0x0003E0, /* ..............XXXXX..... */
+    0x0001C0, /* ...............XXX...... */
+    0x000000, /*                         */
 };
 
-/* Walking frame 2 */
-static const uint32_t luna_walk2[LUNA_H] = {
-    0x00000, /*                     */
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0xFFF00, /* XXXXXXXXXXXX        */
-    0x7FE00, /* .XXXXXXXXXX         */
-    0x3FC00, /* ..XXXXXXXX.         */
-    0x36C00, /* ..XX.XX.XX.         */
-    0x24800, /* ..X..X..X..         */
-    0x00000, /*                     */
+/* Tap frame 2 – right paw hitting (right paw hidden, left paw on table) */
+static const uint32_t bongo_tap2[BONGO_H] = {
+    0x0C0300, /* ....XX..........XX...... */
+    0x1E0780, /* ...XXXX.......XXXX...... */
+    0x1FFF80, /* ...XXXXXXXXXXXXXX....... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x330CC0, /* ..XX..XX....XX..XX...... */
+    0x3FFFC0, /* ..XXXXXXXXXXXXXXXXXX.... */
+    0x1FDF80, /* ...XXXXXXX.XXXXXXX...... */
+    0x0FFF00, /* ....XXXXXXXXXXXX........ */
+    0xFFFFFF, /* XXXXXXXXXXXXXXXXXXXXXXXX */
+    0x380000, /* ..XXX................... */
+    0x7C0000, /* .XXXXX.................. */
+    0x7C0000, /* .XXXXX.................. */
+    0x380000, /* ..XXX................... */
+    0x000000, /*                         */
 };
 
-/* Running frame 1 */
-static const uint32_t luna_run1[LUNA_H] = {
-    0x00000, /*                     */
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0xFFF80, /* XXXXXXXXXXXXX       */
-    0xFFFC0, /* XXXXXXXXXXXXXX      */
-    0xFFF80, /* XXXXXXXXXXXXX       */
-    0x7FF00, /* .XXXXXXXXXXX        */
-    0x3FE00, /* ..XXXXXXXXX         */
-    0x37600, /* ..XX.XXX.XX.        */
-    0x63300, /* .XX..XX..XX.        */
-    0x00000, /*                     */
-};
-
-/* Running frame 2 */
-static const uint32_t luna_run2[LUNA_H] = {
-    0x00000, /*                     */
-    0x00000, /*                     */
-    0x60C00, /* .XX....XX..         */
-    0x71C00, /* .XXX..XXX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x6DC00, /* .XX.XX.XX..         */
-    0x7FC00, /* .XXXXXXXXX.         */
-    0x3F800, /* ..XXXXXXX..         */
-    0x1FFC0, /* ...XXXXXXXXXX       */
-    0x3FFE0, /* ..XXXXXXXXXXXX      */
-    0x1FFC0, /* ...XXXXXXXXXX       */
-    0x0FFE0, /* ....XXXXXXXXXXX     */
-    0x07FC0, /* .....XXXXXXXXX      */
-    0x06EC0, /* .....XX.XXX.X       */
-    0x0CC60, /* ....XX..XX..XX      */
-    0x00000, /*                     */
-};
-
-static uint32_t luna_frame_counter = 0;
+static uint32_t bongo_frame_counter = 0;
 
 static void draw_sprite(lv_obj_t *canvas, int x_off, int y_off, const uint32_t *sprite) {
-    for (int row = 0; row < LUNA_H; row++) {
+    for (int row = 0; row < BONGO_H; row++) {
         uint32_t bits = sprite[row];
-        for (int col = 0; col < LUNA_W; col++) {
-            if (bits & (1u << (LUNA_W - 1 - col))) {
-                for (int sy = 0; sy < LUNA_SCALE; sy++) {
-                    for (int sx = 0; sx < LUNA_SCALE; sx++) {
+        for (int col = 0; col < BONGO_W; col++) {
+            if (bits & (1u << (BONGO_W - 1 - col))) {
+                for (int sy = 0; sy < BONGO_SCALE; sy++) {
+                    for (int sx = 0; sx < BONGO_SCALE; sx++) {
                         lv_canvas_set_px_color(canvas,
-                            x_off + col * LUNA_SCALE + sx,
-                            y_off + row * LUNA_SCALE + sy,
+                            x_off + col * BONGO_SCALE + sx,
+                            y_off + row * BONGO_SCALE + sy,
                             LVGL_FOREGROUND);
                     }
                 }
@@ -152,25 +111,25 @@ static void draw_sprite(lv_obj_t *canvas, int x_off, int y_off, const uint32_t *
     }
 }
 
-void draw_luna(lv_obj_t *canvas, const struct status_state *state) {
-    luna_frame_counter++;
-    int frame = (luna_frame_counter / 4) & 1; /* alternate every 4 redraws */
+void draw_bongocat(lv_obj_t *canvas, const struct status_state *state) {
+    bongo_frame_counter++;
+    int frame = (bongo_frame_counter / 4) & 1; /* alternate every 4 redraws */
 
     const uint32_t *sprite;
     uint8_t wpm = state->wpm;
 
-    if (wpm > 40) {
-        sprite = frame ? luna_run2 : luna_run1;
-    } else if (wpm > 10) {
-        sprite = frame ? luna_walk2 : luna_walk1;
+    if (wpm > 10) {
+        /* Typing – alternate paws */
+        sprite = frame ? bongo_tap2 : bongo_tap1;
     } else {
-        sprite = frame ? luna_sit2 : luna_sit1;
+        /* Idle – subtle ear animation */
+        sprite = frame ? bongo_idle2 : bongo_idle1;
     }
 
-    /* Draw centered horizontally at 2x scale, at Y=52 */
-    int draw_w = LUNA_W * LUNA_SCALE;
+    /* Draw centered horizontally at 3x scale, at Y=46 */
+    int draw_w = BONGO_W * BONGO_SCALE;  /* 72 */
     int x_off = (SCREEN_WIDTH - draw_w) / 2;
-    draw_sprite(canvas, x_off, 52, sprite);
+    draw_sprite(canvas, x_off, 46, sprite);
 }
 
 void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state) {
@@ -180,5 +139,5 @@ void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state) {
     char wpm_text[16];
     snprintf(wpm_text, sizeof(wpm_text), "WPM:%" PRIu8, state->wpm);
 
-    lv_canvas_draw_text(canvas, 0, 88, SCREEN_WIDTH, &label_dsc, wpm_text);
+    lv_canvas_draw_text(canvas, 0, 90, SCREEN_WIDTH, &label_dsc, wpm_text);
 }

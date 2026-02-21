@@ -4,4 +4,4 @@
 #include "util.h"
 
 void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state);
-void draw_luna(lv_obj_t *canvas, const struct status_state *state);
+void draw_bongocat(lv_obj_t *canvas, const struct status_state *state);
