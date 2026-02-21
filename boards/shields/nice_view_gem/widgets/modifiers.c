@@ -27,7 +27,7 @@ void draw_modifier_status(lv_obj_t *canvas, uint8_t mods) {
 
     int total_w = 4 * 14 + 3 * 6; /* 4 boxes of 14px + 3 gaps of 6px = 74px */
     int x_start = (SCREEN_WIDTH - total_w) / 2;
-    int y = 126;
+    int y = 102;
 
     for (int i = 0; i < 4; i++) {
         int x = x_start + i * 20;

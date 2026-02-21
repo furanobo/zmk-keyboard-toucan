@@ -5,11 +5,12 @@
 
 /* Luna sprite data - 20 pixels wide, 16 rows tall.
  * Each uint32_t row: bit 19 = leftmost, bit 0 = rightmost (20-bit wide).
- * Drawn as black pixels on white background.
+ * Drawn at 2x scale (40x32 on screen).
  */
 
 #define LUNA_W 20
 #define LUNA_H 16
+#define LUNA_SCALE 2
 
 /* Sitting frame 1 */
 static const uint32_t luna_sit1[LUNA_H] = {
@@ -138,7 +139,14 @@ static void draw_sprite(lv_obj_t *canvas, int x_off, int y_off, const uint32_t *
         uint32_t bits = sprite[row];
         for (int col = 0; col < LUNA_W; col++) {
             if (bits & (1u << (LUNA_W - 1 - col))) {
-                lv_canvas_set_px_color(canvas, x_off + col, y_off + row, LVGL_FOREGROUND);
+                for (int sy = 0; sy < LUNA_SCALE; sy++) {
+                    for (int sx = 0; sx < LUNA_SCALE; sx++) {
+                        lv_canvas_set_px_color(canvas,
+                            x_off + col * LUNA_SCALE + sx,
+                            y_off + row * LUNA_SCALE + sy,
+                            LVGL_FOREGROUND);
+                    }
+                }
             }
         }
     }
@@ -159,9 +167,10 @@ void draw_luna(lv_obj_t *canvas, const struct status_state *state) {
         sprite = frame ? luna_sit2 : luna_sit1;
     }
 
-    /* Draw centered horizontally, at Y=90 */
-    int x_off = (SCREEN_WIDTH - LUNA_W) / 2;
-    draw_sprite(canvas, x_off, 90, sprite);
+    /* Draw centered horizontally at 2x scale, at Y=52 */
+    int draw_w = LUNA_W * LUNA_SCALE;
+    int x_off = (SCREEN_WIDTH - draw_w) / 2;
+    draw_sprite(canvas, x_off, 52, sprite);
 }
 
 void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state) {
@@ -171,5 +180,5 @@ void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state) {
     char wpm_text[16];
     snprintf(wpm_text, sizeof(wpm_text), "WPM:%" PRIu8, state->wpm);
 
-    lv_canvas_draw_text(canvas, 0, 112, SCREEN_WIDTH, &label_dsc, wpm_text);
+    lv_canvas_draw_text(canvas, 0, 88, SCREEN_WIDTH, &label_dsc, wpm_text);
 }
