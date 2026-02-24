@@ -60,7 +60,7 @@
         email: email {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp K &kp O &kp U &kp S &kp A &kp K &kp U &kp DOT &kp M &kp A &kp T &kp S &kp U &kp D &kp A &kp DOT &kp R &kp K &kp AT &kp S &kp N1 &kp DOT &kp N &kp T &kp T &kp D &kp O &kp C &kp O &kp M &kp O &kp DOT &kp C &kp O &kp M>;
+            bindings = <&kp K &kp O &kp U &kp S &kp A &kp K &kp U &kp DOT &kp M &kp A &kp T &kp S &kp U &kp D &kp A &kp DOT &kp R &kp K &kp LEFT_BRACKET &kp S &kp N1 &kp DOT &kp N &kp T &kp T &kp D &kp O &kp C &kp O &kp M &kp O>;
             label = "EMAIL";
         };
     };
@@ -71,7 +71,7 @@
         base {
             display-name = "BASE";
             bindings = <
-&kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC  &kp GRAVE  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp LEFT_BRACKET  &kp ENTER  &kp LSHFT  &kp Z  &mt LEFT_GUI X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp RIGHT_BRACKET  &kp BACKSLASH  &kp SPACE  &lt 1 LCTRL  &to 2  &lt 3 SEMICOLON  &kp SQT  &kp SLASH
+&kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC  &kp GRAVE  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp LEFT_BRACKET  &kp ENTER  &kp LSHFT  &kp Z  &mt LEFT_GUI X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp RIGHT_BRACKET  &kp BACKSLASH  &kp SPACE  &lt 1 LCTRL  &tog 2  &lt 3 SEMICOLON  &kp SQT  &kp SLASH
             >;
         };
 
@@ -85,7 +85,7 @@
         sym {
             display-name = "SYM";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &pass  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &email  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &matsudako  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &pass  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &email  &trans  &studio_unlock  &trans  &trans  &trans  &trans  &trans  &trans  &matsudako  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
 
