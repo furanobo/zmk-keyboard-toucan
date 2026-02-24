@@ -32,14 +32,14 @@
         window_left: window_left {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp LEFT_GUI &kp LEFT>;
+            bindings = <&kp LG(LEFT)>;
             label = "WINDOW_LEFT";
         };
 
         window_right: window_right {
             compatible = "zmk,behavior-macro";
             #binding-cells = <0>;
-            bindings = <&kp LEFT_GUI &kp RIGHT>;
+            bindings = <&kp LG(RIGHT)>;
             label = "WINDOW_RIGHT";
         };
 
@@ -49,6 +49,20 @@
             bindings = <&kp P &kp A &kp S &kp U &kp D &kp LS(A) &kp Y &kp O &kp N9 &kp N6 &kp EXCL>;
             label = "PASS";
         };
+
+        matsudako: matsudako {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp M &kp A &kp T &kp S &kp U &kp D &kp A &kp K &kp O>;
+            label = "MATSUDAKO";
+        };
+
+        email: email {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp K &kp O &kp U &kp S &kp A &kp K &kp U &kp DOT &kp M &kp A &kp T &kp S &kp U &kp D &kp A &kp DOT &kp R &kp K &kp AT &kp S &kp N1 &kp DOT &kp N &kp T &kp T &kp D &kp O &kp C &kp O &kp M &kp O &kp DOT &kp C &kp O &kp M>;
+            label = "EMAIL";
+        };
     };
 
     keymap {
@@ -57,7 +71,7 @@
         base {
             display-name = "BASE";
             bindings = <
-&kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC  &kp GRAVE  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp SEMI  &kp ENTER  &kp LSHFT  &kp Z  &mt LEFT_GUI X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp RIGHT_BRACKET  &kp NON_US_BACKSLASH  &kp SPACE  &lt 1 LCTRL  &kp SPACE  &lt 3 SEMICOLON  &kp SEMICOLON  &kp SLASH
+&kp TAB  &kp Q  &kp W  &kp E  &kp R  &kp T  &kp Y  &kp U  &kp I  &kp O  &kp P  &kp BSPC  &kp GRAVE  &kp A  &kp S  &kp D  &kp F  &kp G  &kp H  &kp J  &kp K  &kp L  &kp LEFT_BRACKET  &kp ENTER  &kp LSHFT  &kp Z  &mt LEFT_GUI X  &kp C  &kp V  &kp B  &kp N  &kp M  &kp COMMA  &kp DOT  &kp RIGHT_BRACKET  &kp BACKSLASH  &kp SPACE  &lt 1 LCTRL  &to 2  &lt 3 SEMICOLON  &kp SQT  &kp SLASH
             >;
         };
 
@@ -71,7 +85,7 @@
         sym {
             display-name = "SYM";
             bindings = <
-&trans  &kp N1  &kp N2  &kp N3  &kp N4  &kp N5  &kp N6  &kp N7  &kp N8  &kp N9  &kp N0  &kp BSPC  &bt BT_CLR  &bt BT_SEL 0  &bt BT_SEL 1  &bt BT_SEL 2  &bt BT_SEL 3  &bt BT_SEL 4  &kp LEFT  &kp DOWN  &kp UP  &kp RIGHT  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &kp RALT
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &pass  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &email  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &matsudako  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans
             >;
         };
 
@@ -88,7 +102,7 @@
         mouse {
             display-name = "MOUSE";
             bindings = <
-&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mkp RCLK  &mkp MCLK  &mkp LCLK  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mkp MB4  &mkp MB5  &mkp MB4  &mkp MB5  &trans
+&trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &mkp RCLK  &mkp MCLK  &mkp LCLK  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &studio_unlock  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &trans  &to 1  &trans  &mkp MB4  &mkp MB5  &trans
             >;
         };
     };
