@@ -1,0 +1,22 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Behavior to adjust the speed level of a speed step input processor.
+  Use with SPEED_STEP_UP (0) or SPEED_STEP_DN (1) as the parameter.
+
+compatible: "zmk,behavior-speed-step"
+
+properties:
+  "#binding-cells":
+    type: int
+    required: true
+    const: 1
+
+  processor:
+    type: phandle
+    required: true
+    description: Reference to the speed step input processor to control
+
+binding-cells:
+  - param1

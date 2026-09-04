@@ -1,0 +1,61 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: |
+  Multitouch gesture input processor.
+  Detects tap, multi-tap, and swipe gestures from trackpad input events.
+  Single tap emits left click, double tap emits right click,
+  triple tap emits middle click. Swipe gestures are logged and
+  can be mapped to actions.
+
+compatible: "zmk,input-processor-gesture"
+
+properties:
+  "#input-processor-cells":
+    type: int
+    required: true
+    const: 0
+
+  tap-timeout-ms:
+    type: int
+    default: 200
+    description: |
+      Maximum touch duration (ms) for a gesture to count as a tap.
+      Touches longer than this are treated as movement, not taps.
+
+  tap-threshold:
+    type: int
+    default: 50
+    description: |
+      Maximum accumulated movement (sum of abs X + abs Y) during a touch
+      for it to qualify as a tap. Higher values are more forgiving of
+      finger movement during a tap.
+
+  double-tap-window-ms:
+    type: int
+    default: 250
+    description: |
+      Maximum time window (ms) between consecutive taps to count as
+      a multi-tap gesture (double tap, triple tap).
+
+  swipe-threshold:
+    type: int
+    default: 300
+    description: |
+      Minimum accumulated movement in the dominant direction for a
+      touch to qualify as a swipe gesture.
+
+  touch-idle-timeout-ms:
+    type: int
+    default: 80
+    description: |
+      Time without input events (ms) before a touch is considered ended.
+      Lower values make tap detection faster but may cause false
+      touch-end detection on slow movements.
+
+  track-remainders:
+    type: boolean
+    description: |
+      Required by ZMK input listener framework. Not used by the gesture
+      processor (no scaling is performed). Must be present for
+      compatibility with the input processor chain.

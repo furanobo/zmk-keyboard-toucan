@@ -1,0 +1,9 @@
+/*
+ * Override display resolution for Toucan's 144x168 Sharp Memory LCD.
+ * Applied after nice_epaper.overlay (which defaults to 160x68).
+ */
+
+&nice_view {
+    width = <144>;
+    height = <168>;
+};
